@@ -461,7 +461,7 @@ function saveSurvey(){
   // === DÜZELTME: HTTP 200 kontrolü ===
   fetch(GS_URL, {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    
     body: JSON.stringify(payload)
   })
   .then(function(res){
@@ -508,7 +508,7 @@ function retryFailedSubmissions(){
     f.forEach(function(item){
       fetch(GS_URL, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        
         body: JSON.stringify(item.payload)
       })
       .then(function(res){
