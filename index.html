@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#2563eb">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Güç Mesafesi">
+<meta name="description" content="Türk Kültüründe Liderlerin Güç Mesafesi Tercihleri — Akademik Araştırma — Kırıkkale Üniversitesi">
+<meta property="og:title" content="🔬 Güç Mesafesi Araştırması">
+<meta property="og:description" content="5 dakikada bilime katkıda bulunun!">
+<title>🔬 Güç Mesafesi Tercihleri Ölçeği</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f0f4f8;--card:#fff;--text:#202124;--sub:#666;--muted:#999;--primary:#2563eb;--primary-light:#3b82f6;--accent:#eff6ff;--success:#1e8e3e;--error:#d93025;--border:#dadce0;--likert-1:#E3F2FD;--likert-2:#90CAF9;--likert-3:#42A5F5;--likert-4:#1E88E5;--likert-5:#0D47A1;--shadow:0 2px 8px rgba(0,0,0,0.06);--radius:16px;--safe-bottom:env(safe-area-inset-bottom,16px)}
+body.dark{--bg:#0f172a;--card:#1e293b;--text:#e2e8f0;--sub:#94a3b8;--muted:#64748b;--accent:#1e3a5f;--border:#334155;--shadow:0 2px 8px rgba(0,0,0,0.3)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;overflow-x:hidden;-webkit-tap-highlight-color:transparent;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+.app{max-width:520px;margin:0 auto;padding:16px 16px var(--safe-bottom);min-height:100vh;min-height:100dvh}
+.header{text-align:center;padding:24px 16px 12px}
+.header h1{font-size:26px;color:var(--primary);margin-bottom:4px}
+.header .sub{font-size:15px;color:var(--sub)}
+.badge-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+.badge-tag{background:var(--accent);color:var(--primary);padding:5px 12px;border-radius:20px;font-size:13px;font-weight:600}
+.theme-toggle{position:fixed;top:12px;right:12px;z-index:100;width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:var(--card);cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow)}
+.step{display:none;animation:fadeSlideIn .4s ease}
+.step.active{display:block}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.progress-wrap{margin-bottom:16px}
+.progress-info{display:flex;justify-content:space-between;font-size:14px;color:var(--sub);margin-bottom:6px}
+.progress-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-light));border-radius:4px;transition:width .5s ease}
+.card{background:var(--card);border-radius:var(--radius);padding:20px;margin-bottom:12px;box-shadow:var(--shadow)}
+.card h2{font-size:19px;color:var(--primary);margin-bottom:6px}
+.card .desc{font-size:15px;color:var(--sub);margin-bottom:16px;line-height:1.6}
+.wheel-group{margin-bottom:20px}
+.wheel-label{font-size:16px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.wheel-label .req{color:var(--error)}
+.wheel-label .set{color:var(--success);font-size:12px;font-weight:400;margin-left:auto}
+.wheel-wrap{position:relative;height:180px;overflow:hidden;background:var(--bg);border-radius:14px;border:1.5px solid var(--border);transition:border-color .2s}
+.wheel-wrap.filled{border-color:var(--primary)}
+.wheel-wrap::before,.wheel-wrap::after{content:'';position:absolute;left:0;right:0;z-index:2;pointer-events:none}
+.wheel-wrap::before{top:0;height:68px;background:linear-gradient(to bottom,var(--bg),transparent)}
+.wheel-wrap::after{bottom:0;height:68px;background:linear-gradient(to top,var(--bg),transparent)}
+.wheel-highlight{position:absolute;left:8px;right:8px;top:50%;transform:translateY(-50%);height:44px;border-top:2px solid var(--primary);border-bottom:2px solid var(--primary);background:rgba(26,60,110,0.04);border-radius:10px;z-index:1;pointer-events:none}
+.wheel-scroll{height:100%;overflow-y:auto;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;padding:68px 12px;scrollbar-width:none}
+.wheel-scroll::-webkit-scrollbar{display:none}
+.wheel-opt{height:44px;display:flex;align-items:center;justify-content:center;scroll-snap-align:center;font-size:15px;color:var(--sub);cursor:pointer;transition:all .15s;border-radius:8px;user-select:none}
+.wheel-opt.picked{color:var(--primary);font-weight:700;font-size:16px}
+.manual-toggle{font-size:12px;color:var(--primary);cursor:pointer;margin-top:6px;display:inline-block;text-decoration:underline}
+.manual-input{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;margin-top:8px;background:var(--card);color:var(--text);display:none}
+.manual-input.show{display:block}
+.likert-group{margin-bottom:20px}
+.likert-label{font-size:16px;font-weight:600;margin-bottom:10px;line-height:1.4}
+.likert-label .code{background:var(--accent);color:var(--primary);padding:1px 6px;border-radius:4px;font-size:10px;margin-left:4px}
+.likert-label .tm{color:var(--error);font-size:10px;margin-left:4px}
+.likert-scroll{overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:4px 0 8px}
+.likert-scroll::-webkit-scrollbar{display:none}
+.likert-row{display:flex;gap:8px;padding:0 calc(50% - 60px)}
+.likert-opt{width:130px;min-width:130px;height:130px;scroll-snap-align:center;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:12px;font-weight:600;cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);flex-shrink:0;padding:10px 6px;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);color:#fff}
+.likert-opt .likert-num{font-size:26px;font-weight:800}
+.likert-opt .likert-txt{font-size:13px;line-height:1.3;opacity:.9}
+.likert-opt.picked{transform:scale(1.06);box-shadow:0 10px 28px rgba(0,0,0,0.22);z-index:2;border:3px solid rgba(255,255,255,0.5)}
+.likert-opt:not(.picked){opacity:.55}
+.likert-opt.l1{background:var(--likert-1);color:#334155}
+.likert-opt.l2{background:var(--likert-2);color:#1e293b}
+.likert-opt.l3{background:var(--likert-3);color:#fff}
+.likert-opt.l4{background:var(--likert-4);color:#fff}
+.likert-opt.l5{background:var(--likert-5);color:#fff}
+.confirm-btn{display:block;width:100%;padding:10px;border:2px solid var(--primary);border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;text-align:center;font-family:inherit;background:var(--card);color:var(--primary);margin-top:6px;transition:all .2s}
+.confirm-btn:hover{background:var(--accent)}
+.btn{display:block;width:100%;padding:18px;border:none;border-radius:14px;font-size:19px;font-weight:700;cursor:pointer;transition:all .2s;text-align:center;font-family:inherit}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-light);transform:translateY(-1px)}
+.btn-primary:disabled{background:#bbb;cursor:not-allowed;transform:none}
+.btn-outline{background:transparent;color:var(--primary);border:2px solid var(--primary);margin-top:8px}
+.welcome-icon{font-size:64px;text-align:center;display:block;margin-bottom:8px;animation:bounce 1s infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.welcome-features{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.wf-item{background:var(--accent);border-radius:12px;padding:14px;text-align:center}
+.wf-item .icon{font-size:28px;display:block;margin-bottom:4px}
+.wf-item .label{font-size:13px;font-weight:600;color:var(--primary)}
+.complete-icon{font-size:72px;text-align:center;display:block;margin-bottom:12px;animation:popIn .6s cubic-bezier(.68,-.55,.265,1.55)}
+@keyframes popIn{0%{transform:scale(0);opacity:0}80%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+.share-section{margin-top:16px}
+.share-buttons{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+.share-btn{width:44px;height:44px;border-radius:50%;border:none;font-size:20px;cursor:pointer;transition:all .2s;color:#fff;display:flex;align-items:center;justify-content:center}
+.share-btn:hover{transform:scale(1.15)}
+.share-btn.fb{background:#1877f2}.share-btn.tw{background:#000}.share-btn.li{background:#0a66c2}
+.share-btn.wa{background:#25d366}.share-btn.tg{background:#08c}.share-btn.copy{background:var(--primary)}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:24px;font-size:13px;font-weight:600;z-index:200;animation:toastIn .3s ease}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+#confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:300}
+@media(max-width:400px){.app{padding:12px 10px var(--safe-bottom)}.card{padding:14px}.wheel-wrap{height:160px}.wheel-scroll{padding:58px 8px}.wheel-wrap::before,.wheel-wrap::after{height:58px}.wheel-opt{height:44px;font-size:14px}.likert-opt{width:100px;min-width:100px;height:100px;font-size:10px}.likert-opt .likert-num{font-size:18px}.likert-opt .likert-txt{font-size:10px}.likert-row{padding:0 calc(50% - 50px)}.welcome-features{grid-template-columns:1fr}}
+/* Etik Onay Popup */
+.popup-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:999;display:flex;align-items:center;justify-content:center;padding:16px}
+.popup-overlay.hidden{display:none}
+.popup-box{background:var(--card);border-radius:16px;padding:24px;max-width:440px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,0.2);text-align:center}
+.popup-box h2{font-size:22px;color:var(--primary);margin-bottom:12px}
+.popup-box p{font-size:15px;color:var(--sub);line-height:1.6;margin-bottom:8px;text-align:left}
+.popup-box .ethics-list{font-size:14px;text-align:left;background:var(--accent);border-radius:12px;padding:14px;margin:12px 0;color:var(--text);line-height:1.7}
+.popup-box .ethics-list li{margin-bottom:4px;margin-left:16px}
+.popup-box .consent-row{display:flex;align-items:center;gap:10px;margin:16px 0;justify-content:center;font-size:14px;font-weight:600;color:var(--text)}
+.popup-box .consent-row input{width:20px;height:20px;accent-color:var(--primary)}
+</style>
+</head>
+<body>
+
+<!-- ETİK ONAY POPUP -->
+<div class="popup-overlay" id="ethicsPopup">
+  <div class="popup-box">
+    <span style="font-size:48px;display:block;margin-bottom:8px">🔬</span>
+    <h2>Güç Mesafesi Tercihleri Ölçeği</h2>
+    <p>Türk Kültüründe Liderlerin Güç Mesafesi Tercihleri konulu doktora tezi araştırmasına hoş geldiniz. Bu anket, liderlerin güç mesafesine yönelik tutumlarını ölçmeyi amaçlamaktadır.</p>
+    <div class="ethics-list">
+      <strong>🗒️ Etik İlkeler:</strong>
+      <ul style="margin-top:6px">
+        <li>Katılım tamamen <strong>gönüllülük</strong> esasına dayanır.</li>
+        <li>Yanıtlarınız <strong>gizli</strong> tutulacak, kimliğinizle eşleştirilmeyecektir.</li>
+        <li>Veriler yalnızca <strong>akademik amaçlarla</strong> kullanılacaktır.</li>
+        <li>İstediğiniz zaman ankete devam etmeme hakkına sahipsiniz.</li>
+        <li>Anket yaklaşık <strong>5 dakika</strong> sürmektedir.</li>
+      </ul>
+    </div>
+    <p style="text-align:center;font-size:12px;color:var(--sub)">Hazırlayan: Ersin SÜNBÜL · Danışman: Prof. Dr. İhsan YÜKSEL<br>Kırıkkale Üniversitesi · 2026</p>
+    <label class="consent-row">
+      <input type="checkbox" id="ethicsConsent" onchange="document.getElementById('startSurveyBtn').disabled=!this.checked">
+      <span>Yukarıdaki bilgileri okudum, araştırmaya katılmayı kabul ediyorum.</span>
+    </label>
+    <button class="btn btn-primary" id="startSurveyBtn" disabled onclick="acceptEthics()">Ankete Başla 🚀</button>
+  </div>
+</div>
+
+<button class="theme-toggle" id="themeToggle" title="Tema" onclick="toggleTheme()">🌓</button>
+
+<div class="app">
+  <div class="header">
+    <h1>🔬 Güç Mesafesi Tercihleri Ölçeği</h1>
+    <p class="sub">Türk Kültüründe Liderlerin Güç Mesafesi Tercihleri<br>Kırıkkale Üniversitesi · 2026</p>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-info"><span id="progressLabel">Başlayalım!</span><span id="progressPct">%0</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+
+  <div id="steps"></div>
+
+  <div class="card" style="text-align:center">
+    <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Başla 🚀</button>
+    <button class="btn btn-outline" id="prevBtn" onclick="prevStep()" style="display:none">← Geri</button>
+    <p style="font-size:11px;color:var(--muted);margin-top:8px" id="timeEst"></p>
+  </div>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// AYAR — Google Apps Script Web App URL'nizi buraya yazın
+// ═══════════════════════════════════════════════════════════════
+var GS_URL = 'https://script.google.com/macros/s/AKfycbzOk2IbFUvDd6jObu1eXnFeiegtChDFihwVrg0TgHG5Arv5cmnKFSRet516uQRtszjw/exec';
+
+// ══════ VERİ ══════
+var DEMOGRAPHICS = [
+  {id:'cinsiyet',q:'Cinsiyet',opts:['Kadın','Erkek','Diğer','Belirtmek İstemiyorum'],icon:'👤'},
+  {id:'yas',q:'Yaş Aralığı',opts:['18–25','26–35','36–45','46–55','56 ve üzeri'],icon:'🎂'},
+  {id:'medeni',q:'Medeni Durum',opts:['Bekar','Evli','Boşanmış','Dul'],icon:'💍'},
+  {id:'egitim',q:'Eğitim Düzeyi',opts:['İlkokul','Ortaokul','Lise','Ön Lisans','Lisans','Yüksek Lisans','Doktora'],icon:'🎓'},
+  {id:'sehir',q:'Yaşadığınız Şehir',opts:['Adana','Adıyaman','Afyonkarahisar','Ağrı','Amasya','Ankara','Antalya','Artvin','Aydın','Balıkesir','Bilecik','Bingöl','Bitlis','Bolu','Burdur','Bursa','Çanakkale','Çankırı','Çorum','Denizli','Diyarbakır','Edirne','Elazığ','Erzincan','Erzurum','Eskişehir','Gaziantep','Giresun','Gümüşhane','Hakkari','Hatay','Isparta','Mersin','İstanbul','İzmir','Kars','Kastamonu','Kayseri','Kırklareli','Kırşehir','Kocaeli','Konya','Kütahya','Malatya','Manisa','Kahramanmaraş','Mardin','Muğla','Muş','Nevşehir','Niğde','Ordu','Rize','Sakarya','Samsun','Siirt','Sinop','Sivas','Tekirdağ','Tokat','Trabzon','Tunceli','Şanlıurfa','Uşak','Van','Yozgat','Zonguldak','Aksaray','Bayburt','Karaman','Kırıkkale','Batman','Şırnak','Bartın','Ardahan','Iğdır','Yalova','Karabük','Kilis','Osmaniye','Düzce'],icon:'📍',hasManual:true},
+  {id:'meslek',q:'Meslek',opts:['Öğrenci','Kamu Çalışanı','Özel Sektör','Serbest Meslek','Emekli','Diğer'],icon:'💼'},
+  {id:'gelir',q:'Gelir Düzeyi',opts:['Çok Yüksek','Yüksek','Yeterli','Düşük','Çok Düşük','Gelirim Yok'],icon:'💰'},
+  {id:'sektor',q:'Çalışılan Sektör',opts:['Eğitim','Sağlık','Finans','Teknoloji','Üretim','Turizm','Diğer'],icon:'🏢'},
+  {id:'yoneticilik',q:'Yöneticilik Deneyimi',opts:['Evet','Hayır'],icon:'👔'},
+  {id:'yon_sure',q:'Yöneticilik Süresi',opts:['1–3 yıl','4–6 yıl','7–10 yıl','10 yıldan fazla','Yöneticilik deneyimim yok'],icon:'📅'},
+  {id:'kurum',q:'Kurum Büyüklüğü',opts:['1–50 çalışan','51–250','251–1000','1000+'],icon:'🏛️'},
+  {id:'liderlik',q:'Liderlik Pozisyonu',opts:['Evet','Hayır'],icon:'⭐'}
+];
+
+var SCALE_ITEMS = [
+  {code:'S11',text:'Hiyerarşik yapı, karmaşık sistemlerin düzenlenmesi için gereklidir.'},
+  {code:'S13',text:'Hiyerarşi olmadan bir organizasyon verimli çalışamaz.'},
+  {code:'S89',text:'Eşitlikçi güç dağılımı, bireyler arası güveni ve toplumsal barışı olumlu yönde etkiler.',tm:true},
+  {code:'S56',text:'Güçlü bireyler, toplumda adaletin sağlanmasında önemli rol oynar.'},
+  {code:'S69',text:'Liderlerin sosyal statü algıları, toplumsal değişim süreçlerinde belirleyici bir rol oynar.'},
+  {code:'S46',text:'Çocukların özgürce kendilerini ifade etmeleri teşvik edilmelidir.',tm:true},
+  {code:'S34',text:'Toplumsal değişimlerin başarılı olması için güçlü bir zemin oluşturulmalıdır.'},
+  {code:'S85',text:'Toplumsal cinsiyet eşitliği, liderlikte daha kapsayıcı bir yaklaşımın benimsenmesini sağlar.',tm:true},
+  {code:'S41',text:'Çocuklara otoriteye saygının önemi öğretilmelidir.'},
+  {code:'S84',text:'Kadınların liderlik rollerinde daha fazla yer alması, toplumsal yapıyı olumlu yönde değiştirir.',tm:true},
+  {code:'S66',text:'Sosyal eşitsizlikler, bireylerin toplumsal statü algısını güçlendirir.'},
+  {code:'S48',text:'Otoriteye uymayı öğrenmek önemlidir.'},
+  {code:'S19',text:'Hiyerarşi olmadan yönetim otoritesi zayıflar.'},
+  {code:'S43',text:'Çocuklara, toplumsal düzenin otoriteye dayandığı öğretilmelidir.'},
+  {code:'S64',text:'Sosyal dinamikler, bireylerin statü algılarında değişime neden olur.',tm:true},
+  {code:'S2',text:'Gelir ve statü farkları toplumun düzenini sağlar.'},
+  {code:'S50',text:'Otoriteye saygı, toplumsal rollerin anlaşılmasını sağlar.'},
+  {code:'S3',text:'Liderler, alt kademedekilerden daha fazla ayrıcalığa sahip olmalıdır.'},
+  {code:'S18',text:'Hiyerarşik düzen, karar alma süreçlerinde etkinliği artırır.'},
+  {code:'S67',text:'Statü farklılıkları, bireylerin toplumsal rollerine yönelik tutumlarını etkiler.'},
+  {code:'S47',text:'Çocuklara eleştirel düşünme becerisi kazandırılmalıdır.',tm:true},
+  {code:'S91',text:'Güç sahibi bireyler, toplumsal düzenin korunmasında daha fazla sorumluluk üstlenmelidir.'},
+  {code:'S21',text:'Etkili bir lider, astlarını dinlemeye zaman ayırır.',tm:true},
+  {code:'S90',text:'Toplumsal cinsiyet eşitliği, liderlerin güç algısını dönüştürür.',tm:true},
+  {code:'S92',text:'Toplumsal adaletin sağlanması, güçlü bireylerin inisiyatif almasına bağlıdır.'},
+  {code:'S5',text:'Sınıfsal eşitsizlik sosyal düzenin korunmasına katkı sağlar.'},
+  {code:'S1',text:'Toplumda eşitsizlikler doğal ve kaçınılmazdır.'},
+  {code:'S55',text:'Güçlü insanlar, toplumun refahını sağlamakla yükümlüdür.'}
+];
+
+var LIKERT_TEXTS = ['Kesinlikle\nKatılmıyorum','Katılmıyorum','Kararsızım','Katılıyorum','Kesinlikle\nKatılıyorum'];
+var REVERSE_ITEMS = ['S89','S46','S85','S84','S64','S47','S21','S90'];
+var TOTAL_STEPS = 5; // 0=Welcome, 1=Demog1, 2=Scale1-14, 3=Scale15-28, 4=Demog2, 5=Complete
+var currentStep = 0, startedAt = Date.now();
+var picks = {}, manualInputs = {}, confirmed = {};
+
+// ══════ TEMA ══════
+function toggleTheme(){
+  document.body.classList.toggle('dark');
+  var d=document.body.classList.contains('dark');
+  localStorage.setItem('theme',d?'dark':'light');
+  document.getElementById('themeToggle').textContent=d?'☀️':'🌓';
+}
+(function(){
+  if(localStorage.getItem('theme')==='dark'||(!localStorage.getItem('theme')&&matchMedia('(prefers-color-scheme:dark)').matches)){
+    document.body.classList.add('dark');document.getElementById('themeToggle').textContent='☀️';
+  }
+})();
+
+function W(s){return s.replace(/\n/g,'<br>');}
+
+function renderWelcome(){
+  return '<div class="step active" id="step-0"><div class="card" style="text-align:center">'+
+    '<span class="welcome-icon">🔬</span>'+
+    '<h2>Türk Kültüründe Liderlerin<br>Güç Mesafesi Tercihleri</h2>'+
+    '<div class="badge-row" style="margin:12px 0"><span class="badge-tag">⏱ ~5 dk</span><span class="badge-tag">📱 Mobil</span><span class="badge-tag">🔒 Gizli</span></div>'+
+    '<p class="desc" style="margin-top:8px">Bu araştırma, doktora tezi kapsamında yürütülmektedir. Yanıtlarınız <strong>gizli</strong> tutulacak ve yalnızca <strong>akademik amaçlarla</strong> kullanılacaktır.</p>'+
+    '<div class="welcome-features">'+
+      '<div class="wf-item"><span class="icon">⏱️</span><span class="label">~5 Dakika</span></div>'+
+      '<div class="wf-item"><span class="icon">📱</span><span class="label">Mobil Uyumlu</span></div>'+
+      '<div class="wf-item"><span class="icon">🔒</span><span class="label">%100 Gizli</span></div>'+
+      '<div class="wf-item"><span class="icon">🏅</span><span class="label">Rozet Kazan!</span></div>'+
+    '</div>'+
+    '<p style="font-size:12px;color:var(--sub);margin-top:12px">Hazırlayan: <strong>Ersin SÜNBÜL</strong><br>Danışman: Prof. Dr. İhsan YÜKSEL<br>Kırıkkale Üniversitesi, 2026</p>'+
+  '</div></div>';
+}
+
+function renderDemoStep(start,end,num,title){
+  var actualStart = start, actualEnd = Math.min(end, DEMOGRAPHICS.length);
+  var h='<div class="step" id="step-'+num+'"><div class="card"><h2>📋 '+title+'</h2><p class="desc">Makarayı kaydırarak seçiminizi yapın.</p>';
+  for(var i=actualStart;i<actualEnd;i++){
+    var d=DEMOGRAPHICS[i],gid='d_'+i;
+    h+='<div class="wheel-group"><div class="wheel-label">'+d.icon+' '+d.q+' <span class="req">*</span><span class="set" id="set-'+gid+'" style="display:none">✓</span></div>'+
+    '<div class="wheel-wrap" id="wheel-'+gid+'"><div class="wheel-highlight"></div><div class="wheel-scroll">';
+    for(var j=0;j<d.opts.length;j++) h+='<div class="wheel-opt">'+d.opts[j]+'</div>';
+    h+='</div></div>';
+    if(d.hasManual||d.id==='meslek'||d.id==='sektor'){
+      h+='<span class="manual-toggle" onclick="toggleManual(\''+gid+'\',this)">✏️ Kendi yanıtımı yazayım</span>'+
+      '<input class="manual-input" id="manual-'+gid+'" placeholder="Yanıtınızı yazın..." oninput="onManualInput(\''+gid+'\',this.value)">';
+    }
+    h+='<button class="confirm-btn" id="confirm-'+gid+'" onclick="confirmPick(\''+gid+'\')">✓ Onayla</button>';
+    h+='</div>';
+  }
+  h+='</div></div>';return h;
+}
+
+function renderScaleStep(start,end,num,title){
+  var h='<div class="step" id="step-'+num+'"><div class="card"><h2>📊 '+title+'</h2>'+
+  '<p class="desc">İfadelere katılım düzeyinizi belirtin. 1=Kesinlikle Katılmıyorum, 5=Kesinlikle Katılıyorum.<br><small>TM = Ters Madde</small></p>';
+  for(var i=start;i<end;i++){
+    var item=SCALE_ITEMS[i];
+    h+='<div class="likert-group" id="likert-group-s_'+i+'"><div class="likert-label"><span class="req">*</span> S'+(i+1)+'. '+item.text+
+      ' <span class="code">'+item.code+'</span>'+(item.tm?'<span class="tm">TM</span>':'')+
+      '</div><div class="likert-scroll"><div class="likert-row" id="likert-row-s_'+i+'">';
+    for(var v=1;v<=5;v++){
+      h+='<div class="likert-opt l'+v+'" data-val="'+v+'" onclick="selectLikert(\'s_'+i+'\','+v+',this)">'+
+        '<span class="likert-num">'+v+'</span><span class="likert-txt">'+W(LIKERT_TEXTS[v-1])+'</span></div>';
+    }
+    h+='</div></div></div>';
+  }
+  h+='</div></div>';return h;
+}
+
+function renderComplete(){
+  return '<div class="step" id="step-complete"><div class="card" style="text-align:center">'+
+    '<span class="complete-icon">🎉</span><h2>Araştırmaya Katkınız İçin Teşekkürler!</h2>'+
+    '<p class="desc">Yanıtlarınız başarıyla kaydedildi. Bilime katkıda bulundunuz! 🌟</p>'+
+    '<div style="background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:20px;padding:20px;margin:16px 0;border:2px dashed #f59e0b">'+
+      '<span style="font-size:48px;display:block">🏅</span><h3 style="color:#92400e;margin:8px 0 4px">Bilime Katkı Rozeti</h3>'+
+      '<p style="color:#a16207;font-size:12px">Güç Mesafesi Araştırması · 2026</p><p style="color:#92400e;font-size:11px">Ersin SÜNBÜL · Kırıkkale Üniversitesi</p>'+
+    '</div>'+
+    '<div class="share-section"><h3 style="font-size:15px;margin-bottom:4px">🔗 Arkadaşlarını da Davet Et!</h3>'+
+      '<p style="font-size:12px;color:var(--sub);margin-bottom:8px">Ne kadar çok kişi katılırsa sonuçlar o kadar güvenilir olur.</p>'+
+      '<div class="share-buttons" id="shareBtns"></div><p style="font-size:11px;color:var(--muted);margin-top:8px" id="shareMsg"></p>'+
+    '</div></div></div>';
+}
+
+// ══════ SEÇİMLER ══════
+function selectLikert(qid,val,el){
+  var g=el.closest('.likert-group');
+  g.querySelectorAll('.likert-opt').forEach(function(o){o.classList.remove('picked');});
+  el.classList.add('picked');picks[qid]=val;
+  el.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  validateStep();updateProgress();
+}
+
+function confirmPick(gid){
+  var v = picks[gid];
+  if(v === undefined || v < 0) return;
+  confirmed[gid] = true;
+  var btn = document.getElementById('confirm-'+gid);
+  if(btn){btn.textContent='✓ Onaylandı';btn.style.background='#1e8e3e';btn.style.color='#fff';btn.style.borderColor='#1e8e3e';}
+  var s = document.getElementById('set-'+gid);
+  if(s){s.style.display='inline';s.textContent='✓';s.style.fontSize='18px';s.style.fontWeight='800';s.style.color='#1e8e3e';}
+  setTimeout(function(){
+    if(btn){btn.textContent='✓ Onayla (değiştir)';btn.style.background='var(--card)';btn.style.color='var(--primary)';btn.style.borderColor='var(--primary)';}
+  },1500);
+  validateStep();updateProgress();
+}
+
+function toggleManual(gid,el){
+  var inp=document.getElementById('manual-'+gid);if(!inp)return;
+  inp.classList.toggle('show');
+  el.textContent=inp.classList.contains('show')?'✓ Makaradan seç':'✏️ Kendi yanıtımı yazayım';
+  if(!inp.classList.contains('show')){inp.value='';delete manualInputs[gid];validateStep();updateProgress();}
+}
+function onManualInput(gid,v){
+  manualInputs[gid]=v.trim();var s=document.getElementById('set-'+gid);
+  if(s)s.style.display=v.trim()?'inline':'none';
+  if(v.trim())picks[gid]=-1;validateStep();updateProgress();
+}
+
+// ══════ NAVİGASYON ══════
+function initSteps(){
+  // Adım 0: Hoşgeldin, Adım 1: Demografi 1 (ilk 6), Adım 2: Ölçek 1-14, Adım 3: Ölçek 15-28, Adım 4: Demografi 2 (son 6)
+  document.getElementById('steps').innerHTML =
+    renderWelcome() +
+    renderDemoStep(0,6,1,'Demografik Bilgiler (1/2)') +
+    renderScaleStep(0,14,2,'Ölçek Maddeleri (S1–S14)') +
+    renderScaleStep(14,28,3,'Ölçek Maddeleri (S15–S28)') +
+    renderDemoStep(6,12,4,'Demografik Bilgiler (2/2)') +
+    renderComplete();
+
+  // Wheel scroll event'leri bağla
+  [1,4].forEach(function(n){
+    var step=document.getElementById('step-'+n);if(!step)return;
+    step.querySelectorAll('.wheel-scroll').forEach(function(scroll){
+      var wrap=scroll.parentElement,gid=wrap.id.replace('wheel-','');
+      var di=parseInt(gid.split('_')[1]||'');if(isNaN(di)||!DEMOGRAPHICS[di])return;
+      var opts=DEMOGRAPHICS[di].opts;
+      function getIdx(){return Math.round(scroll.scrollTop/44)}
+      function update(){
+        var idx=Math.max(0,Math.min(getIdx(),opts.length-1));
+        scroll.querySelectorAll('.wheel-opt').forEach(function(e,i){e.classList.toggle('picked',i===idx)});
+        wrap.classList.add('filled');picks[gid]=idx;
+        validateStep();updateProgress();
+      }
+      var t;scroll.addEventListener('scroll',function(){clearTimeout(t);t=setTimeout(update,150)},{passive:true});
+      setTimeout(update,200);
+      scroll.addEventListener('click',function(e){
+        var opt=e.target.closest('.wheel-opt');if(!opt)return;
+        scroll.scrollTo({top:Array.from(scroll.querySelectorAll('.wheel-opt')).indexOf(opt)*44,behavior:'smooth'});
+      });
+    });
+  });
+  showStep(0);
+}
+
+function showStep(n){
+  document.querySelectorAll('.step').forEach(function(e){e.classList.remove('active')});
+  var stepEl;
+  if(n>=TOTAL_STEPS){
+    stepEl=document.getElementById('step-complete');
+  }else{
+    stepEl=document.getElementById('step-'+n);
+  }
+  if(stepEl)stepEl.classList.add('active');
+  currentStep=n;
+
+  var nb=document.getElementById('nextBtn'),pb=document.getElementById('prevBtn');
+
+  if(n===0){
+    nb.textContent='Başla 🚀';nb.disabled=false;pb.style.display='none';
+    document.getElementById('timeEst').textContent='⏳ Adım 0/5 · ~5 dk';
+  }else if(n>=TOTAL_STEPS){
+    nb.style.display='none';pb.style.display='none';
+    document.getElementById('timeEst').textContent='';
+    document.getElementById('progressLabel').textContent='✅ Tamamlandı!';
+    document.getElementById('progressPct').textContent='%100';
+    document.getElementById('progressFill').style.width='100%';
+    fireConfetti();saveSurvey();
+    return;
+  }else{
+    nb.textContent=(n===TOTAL_STEPS-1)?'Gönder 🎉':'Devam →';
+    nb.disabled=false;pb.style.display='block';
+    document.getElementById('timeEst').textContent='⏳ Adım '+(n+1)+'/'+TOTAL_STEPS;
+    validateStep();
+  }
+  updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function nextStep(){
+  if(currentStep===0)startedAt=Date.now();
+  if(!validateStep())return;
+  showStep(currentStep+1);
+}
+function prevStep(){if(currentStep>0)showStep(currentStep-1);}
+
+function validateStep(){
+  if(currentStep===0||currentStep>=TOTAL_STEPS)return true;
+  var keys=[];
+  // Adım 1: demo 0-5, Adım 2: scale 0-13, Adım 3: scale 14-27, Adım 4: demo 6-11
+  if(currentStep===1)for(var i=0;i<6;i++)keys.push('d_'+i);
+  if(currentStep===2)for(var i=0;i<14;i++)keys.push('s_'+i);
+  if(currentStep===3)for(var i=14;i<28;i++)keys.push('s_'+i);
+  if(currentStep===4)for(var i=6;i<12;i++)keys.push('d_'+i);
+
+  var ok=keys.every(function(k){
+    return (manualInputs[k]&&manualInputs[k].trim())||(picks[k]!==undefined&&picks[k]>=0);
+  });
+  var nb=document.getElementById('nextBtn');
+  if(nb)nb.disabled=!ok;
+  return ok;
+}
+
+function updateProgress(){
+  var a=0,t=DEMOGRAPHICS.length+SCALE_ITEMS.length;
+  DEMOGRAPHICS.forEach(function(_,i){if(confirmed['d_'+i]||(manualInputs['d_'+i]&&manualInputs['d_'+i].trim()))a++;});
+  SCALE_ITEMS.forEach(function(_,i){if(picks['s_'+i]!==undefined&&picks['s_'+i]>0)a++;});
+  var p=Math.round(a/t*100);
+  document.getElementById('progressLabel').textContent='📝 '+a+' / '+t+' cevaplandı';
+  document.getElementById('progressPct').textContent='%'+p;
+  document.getElementById('progressFill').style.width=p+'%';
+}
+
+// ══════ KAYDET ══════
+function saveSurvey(){
+  var dem={},sc={};
+  DEMOGRAPHICS.forEach(function(d,i){var k='d_'+i;dem[d.id]=manualInputs[k]?manualInputs[k].trim():(picks[k]>=0?d.opts[picks[k]]:'');});
+  SCALE_ITEMS.forEach(function(item,i){sc[item.code]=picks['s_'+i]||0;});
+  var scRev={};for(var code in sc){scRev[code]=REVERSE_ITEMS.indexOf(code)>=0?6-sc[code]:sc[code];}
+  var ref=(new URLSearchParams(location.search)).get('ref')||'direct';
+  var dur=Math.round((Date.now()-startedAt)/1000);
+
+  // localStorage yedek
+  try{var b=JSON.parse(localStorage.getItem('gm_yedek')||'[]');b.push({dem:dem,sc:sc,ref:ref,time:new Date().toISOString(),dur:dur});localStorage.setItem('gm_yedek',JSON.stringify(b));}catch(e){}
+
+  var payload = {
+    cinsiyet:dem.cinsiyet,yas:dem.yas,medeni:dem.medeni,egitim:dem.egitim,
+    meslek:dem.meslek,gelir:dem.gelir,sektor:dem.sektor,
+    yoneticilik:dem.yoneticilik,yon_sure:dem.yon_sure,kurum:dem.kurum,
+    sehir:dem.sehir,liderlik:dem.liderlik,
+    scale_json:sc,scale_rev:scRev,
+    user_agent:navigator.userAgent,referrer:ref,
+    started_at:new Date(startedAt).toISOString(),completed_at:new Date().toISOString(),
+    duration_sec:dur
+  };
+
+  // === DÜZELTME: HTTP 200 kontrolü ===
+  fetch(GS_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  })
+  .then(function(res){
+    if(res.ok){
+      console.log('✅ Yanıt kaydedildi (HTTP ' + res.status + ')');
+      removeFromFailed(payload);
+    } else {
+      console.error('❌ Kayıt hatası HTTP ' + res.status);
+      saveFailedLocally(payload);
+    }
+  })
+  .catch(function(err){
+    console.error('❌ Bağlantı hatası:', err.message);
+    saveFailedLocally(payload);
+  });
+
+  renderShareButtons();
+}
+
+function saveFailedLocally(payload){
+  try{
+    var f = JSON.parse(localStorage.getItem('gm_failed')||'[]');
+    var exists = f.some(function(x){return x.payload.completed_at === payload.completed_at;});
+    if(!exists){
+      f.push({payload:payload, time:new Date().toISOString()});
+      localStorage.setItem('gm_failed',JSON.stringify(f));
+    }
+  }catch(e){}
+}
+
+function removeFromFailed(payload){
+  try{
+    var f = JSON.parse(localStorage.getItem('gm_failed')||'[]');
+    f = f.filter(function(x){return x.payload.completed_at !== payload.completed_at;});
+    localStorage.setItem('gm_failed',JSON.stringify(f));
+  }catch(e){}
+}
+
+function retryFailedSubmissions(){
+  try{
+    var f = JSON.parse(localStorage.getItem('gm_failed')||'[]');
+    if(!f.length) return;
+    console.log('🔄 ' + f.length + ' başarısız gönderim tekrar deneniyor...');
+    f.forEach(function(item){
+      fetch(GS_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(item.payload)
+      })
+      .then(function(res){
+        if(res.ok){
+          console.log('✅ Yedek gönderim başarılı');
+          removeFromFailed(item.payload);
+        }
+      })
+      .catch(function(){});
+    });
+  }catch(e){}
+}
+
+// ══════ PAYLAŞIM ══════
+function renderShareButtons(){
+  var b=document.getElementById('shareBtns');if(!b)return;
+  b.innerHTML='<button class="share-btn fb" title="Facebook" onclick="shareOn(\'facebook\')">📘</button>'+
+    '<button class="share-btn tw" title="Twitter/X" onclick="shareOn(\'twitter\')">𝕏</button>'+
+    '<button class="share-btn li" title="LinkedIn" onclick="shareOn(\'linkedin\')">💼</button>'+
+    '<button class="share-btn wa" title="WhatsApp" onclick="shareOn(\'whatsapp\')">💬</button>'+
+    '<button class="share-btn tg" title="Telegram" onclick="shareOn(\'telegram\')">✈️</button>'+
+    '<button class="share-btn copy" title="Linki Kopyala" onclick="copyLink()">📋</button>';
+}
+function shareOn(p){
+  var base=location.origin+location.pathname,u=encodeURIComponent(base+'?ref='+p);
+  var t=encodeURIComponent('🔬 Liderlerin Güç Mesafesi Tercihleri araştırmasına katıldım! 5 dakikada bilime katkıda bulunabilirsiniz.');
+  var urls={facebook:'https://www.facebook.com/sharer/sharer.php?u='+u,twitter:'https://twitter.com/intent/tweet?text='+t+'&url='+u,linkedin:'https://www.linkedin.com/sharing/share-offsite/?url='+u,whatsapp:'https://wa.me/?text='+t+'%20'+u,telegram:'https://t.me/share/url?url='+u+'&text='+t};
+  if(urls[p]){window.open(urls[p],'_blank','width=600,height=400');document.getElementById('shareMsg').textContent='✅ Paylaşım için teşekkürler! 🙏';}
+}
+function copyLink(){navigator.clipboard.writeText(location.origin+location.pathname+'?ref=direct').then(function(){document.getElementById('shareMsg').textContent='📋 Link kopyalandı!';showToast('📋 Link kopyalandı!');});}
+
+function fireConfetti(){if(typeof confetti==='undefined')return;var end=Date.now()+3000;(function frame(){confetti({particleCount:5,angle:60,spread:55,origin:{x:0,y:.7},colors:['#2563eb','#2d5fa8','#f59e0b','#1e8e3e','#d93025']});confetti({particleCount:5,angle:120,spread:55,origin:{x:1,y:.7},colors:['#2563eb','#2d5fa8','#f59e0b','#1e8e3e','#d93025']});if(Date.now()<end)requestAnimationFrame(frame);}());setTimeout(function(){confetti({particleCount:150,spread:100,origin:{y:.6}});},500);}
+function showToast(m){var t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(function(){t.remove();},2500);}
+
+function acceptEthics(){
+  document.getElementById('ethicsPopup').classList.add('hidden');
+  try{sessionStorage.setItem('ethics_ok','1');}catch(e){}
+}
+(function(){if(sessionStorage.getItem('ethics_ok')==='1'){document.getElementById('ethicsPopup').classList.add('hidden');}})();
+
+// ══════ BAŞLAT ══════
+document.addEventListener('DOMContentLoaded',function(){initSteps();retryFailedSubmissions();});
+</script>
+</body>
+</html>

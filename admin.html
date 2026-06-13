@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin · Güç Mesafesi Anketi</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f0f4f8;color:#202124;line-height:1.5;min-height:100vh}
+.container{max-width:900px;margin:0 auto;padding:16px}
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:12px 0;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.topbar h1{font-size:20px;color:#2563eb}
+.topbar .info{font-size:13px;color:#666}
+.card{background:#fff;border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+.card h2{font-size:16px;color:#2563eb;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid #e8f0fe}
+.counter-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.counter-box{background:linear-gradient(135deg,#2563eb,#2d5fa8);color:#fff;border-radius:14px;padding:20px;text-align:center}
+.counter-box.today{background:linear-gradient(135deg,#1e8e3e,#2dba4e)}
+.counter-box .val{font-size:42px;font-weight:800;line-height:1}
+.counter-box .lbl{font-size:13px;opacity:.9;margin-top:4px}
+.target-bar{height:12px;background:#e8f0fe;border-radius:6px;overflow:hidden;margin:8px 0}
+.target-fill{height:100%;border-radius:6px;transition:width .5s ease}
+.target-labels{display:flex;justify-content:space-between;font-size:12px;color:#666}
+.share-links{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.share-link-item{background:#f8fafc;border:1.5px solid #e8f0fe;border-radius:10px;padding:10px;display:flex;align-items:center;justify-content:space-between;font-size:12px;gap:4px}
+.share-link-item .platform{font-weight:600;color:#2563eb;white-space:nowrap}
+.share-link-item .url{font-size:10px;color:#666;word-break:break-all;flex:1}
+.copy-btn{background:#2563eb;color:#fff;border:none;border-radius:6px;padding:5px 8px;font-size:10px;cursor:pointer;white-space:nowrap}
+.sheet-btn{display:block;width:100%;padding:18px;border:none;border-radius:14px;font-size:19px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;text-align:center;background:linear-gradient(135deg,#0f9d58,#0d8045);color:#fff;margin-bottom:8px}
+.sheet-btn:hover{background:linear-gradient(135deg,#0d8045,#0a6e38)}
+.btn{display:block;width:100%;padding:13px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;text-align:center}
+.btn-primary{background:#2563eb;color:#fff}.btn-primary:hover{background:#1d4ed8}
+.btn-outline{background:#fff;color:#2563eb;border:2px solid #2563eb;margin-top:8px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:24px;font-size:13px;font-weight:600;z-index:200;animation:toastIn .3s ease}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.diag-box{background:#fffbe6;border:1px solid #f59e0b;border-radius:10px;padding:12px;margin-bottom:12px;font-size:13px;color:#92400e}
+@media(max-width:500px){.counter-grid{grid-template-columns:1fr}.share-links{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="topbar">
+  <h1>🔬 Güç Mesafesi Anketi · Admin Panel</h1>
+  <span class="info" id="refreshInfo">🔄 Yükleniyor...</span>
+</div>
+
+<div class="diag-box" id="diagBox" style="display:none">
+  <strong>🔍 Tanı:</strong> <span id="diagMsg"></span>
+</div>
+
+<div class="counter-grid">
+  <div class="counter-box"><div class="val" id="counterTotal">-</div><div class="lbl">Toplam Yanıt</div></div>
+  <div class="counter-box today"><div class="val" id="counterToday">-</div><div class="lbl">Bugün</div></div>
+</div>
+
+<div class="card">
+  <h2>🎯 Hedef İlerleme</h2>
+  <div class="target-bar"><div class="target-fill" id="targetFill" style="width:0%;background:#1e8e3e"></div></div>
+  <div class="target-labels"><span>0</span><span>Min: <strong>381</strong></span><span>Maks: <strong>1000</strong></span></div>
+  <p style="text-align:center;font-size:13px;color:#666;margin-top:6px" id="targetMsg">-</p>
+</div>
+
+<div class="card">
+  <h2>⏱️ Ortalama Tamamlama Süresi</h2>
+  <div style="text-align:center;font-size:32px;font-weight:800;color:#2563eb" id="avgDuration">-</div>
+</div>
+
+<div class="card">
+  <h2>📊 Kaynak Dağılımı</h2>
+  <div style="max-width:350px;margin:0 auto"><canvas id="referrerChart"></canvas></div>
+  <div style="text-align:center;margin-top:8px" id="referrerLegend"></div>
+  <button class="btn btn-outline" onclick="downloadChart('referrerChart','Kaynak_Dagilimi')" style="width:auto;display:inline-block;padding:8px 16px;font-size:12px">📥 Grafiği İndir</button>
+</div>
+
+<div class="card">
+  <h2>📈 Günlük Tamamlanma (Son 14 Gün)</h2>
+  <div style="max-width:100%"><canvas id="dailyChart"></canvas></div>
+  <button class="btn btn-outline" onclick="downloadChart('dailyChart','Gunluk_Tamamlama')" style="width:auto;display:inline-block;padding:8px 16px;font-size:12px;margin-top:8px">📥 Grafiği İndir</button>
+</div>
+
+<div class="card">
+  <h2>📊 Ölçek Maddeleri Dağılımı</h2>
+  <p style="font-size:12px;color:#666;margin-bottom:10px">Her madde için 1-5 katılım dağılımını görün.</p>
+  <select id="scaleSelect" onchange="renderScaleChart()" style="width:100%;padding:10px;border:1.5px solid #dadce0;border-radius:10px;font-size:14px;font-family:inherit;margin-bottom:12px">
+    <option value="">-- Madde seçin --</option>
+  </select>
+  <div style="max-width:100%"><canvas id="scaleChart"></canvas></div>
+  <button class="btn btn-outline" onclick="downloadChart('scaleChart','Likert_Dagilim')" style="width:auto;display:inline-block;padding:8px 16px;font-size:12px;margin-top:8px">📥 Grafiği İndir</button>
+</div>
+
+<div class="card">
+  <h2>📋 Demografik Dağılımlar</h2>
+  <p style="font-size:12px;color:#666;margin-bottom:10px">Demografik özelliklere göre katılımcı dağılımını görün.</p>
+  <select id="demoSelect" onchange="renderDemoChart()" style="width:100%;padding:10px;border:1.5px solid #dadce0;border-radius:10px;font-size:14px;font-family:inherit;margin-bottom:12px">
+    <option value="">-- Özellik seçin --</option>
+  </select>
+  <div style="max-width:350px;margin:0 auto"><canvas id="demoChart"></canvas></div>
+  <div style="text-align:center;margin-top:8px" id="demoLegend"></div>
+  <button class="btn btn-outline" onclick="downloadChart('demoChart','Demografik_Dagilim')" style="width:auto;display:inline-block;padding:8px 16px;font-size:12px;margin-top:8px">📥 Grafiği İndir</button>
+</div>
+
+<div class="card">
+  <h2>📥 Verileri Dışa Aktar</h2>
+  <p style="font-size:12px;color:#666;margin-bottom:12px">Google Sheets üzerinden tüm verilere erişin, CSV indirin, grafikler oluşturun.</p>
+  <button class="sheet-btn" id="sheetLinkBtn" onclick="openSheet()">📊 Google Sheets'te Aç</button>
+  <button class="btn btn-primary" onclick="downloadCSV()" style="margin-top:8px">📥 CSV İndir (Excel)</button>
+</div>
+
+<div class="card">
+  <h2>🔗 Paylaşım Linkleri</h2>
+  <p style="font-size:12px;color:#666;margin-bottom:8px">Her platform için ayrı link — tıklanma kaynağı takip edilir.</p>
+  <div class="share-links" id="shareLinks"></div>
+</div>
+
+<div class="card" style="text-align:center">
+  <button class="btn btn-outline" onclick="window.open(location.origin+location.pathname.replace('/admin.html','/').replace('/admin','/'),'_blank')">👁️ Anketi Gör</button>
+  <button class="btn btn-outline" onclick="location.reload()" style="margin-top:8px">🔄 Manuel Yenile</button>
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script>
+// ═══════════════════════════════════════════════════════════════
+// AYARLAR — Google Apps Script Web App URL'nizi buraya yazın
+// ═══════════════════════════════════════════════════════════════
+var GS_URL = 'https://script.google.com/macros/s/AKfycbzOk2IbFUvDd6jObu1eXnFeiegtChDFihwVrg0TgHG5Arv5cmnKFSRet516uQRtszjw/exec';
+var SHEET_URL = 'https://docs.google.com/spreadsheets/d/1fQdFjI5g5K2fIu1jDRpXszQqmkGH4HHdLVH17CvfWVk/edit?usp=sharing';
+
+// Ölçek maddeleri (index.html'deki SCALE_ITEMS ile AYNI sırada olmalı!)
+var _scaleItems = [
+  {code:'S11',text:'Hiyerarşik yapı, karmaşık sistemlerin düzenlenmesi için gereklidir.'},
+  {code:'S13',text:'Hiyerarşi olmadan bir organizasyon verimli çalışamaz.'},
+  {code:'S89',text:'Eşitlikçi güç dağılımı, bireyler arası güveni ve toplumsal barışı olumlu yönde etkiler.'},
+  {code:'S56',text:'Güçlü bireyler, toplumda adaletin sağlanmasında önemli rol oynar.'},
+  {code:'S69',text:'Liderlerin sosyal statü algıları, toplumsal değişim süreçlerinde belirleyici bir rol oynar.'},
+  {code:'S46',text:'Çocukların özgürce kendilerini ifade etmeleri teşvik edilmelidir.'},
+  {code:'S34',text:'Toplumsal değişimlerin başarılı olması için güçlü bir zemin oluşturulmalıdır.'},
+  {code:'S85',text:'Toplumsal cinsiyet eşitliği, liderlikte daha kapsayıcı bir yaklaşımın benimsenmesini sağlar.'},
+  {code:'S41',text:'Çocuklara otoriteye saygının önemi öğretilmelidir.'},
+  {code:'S84',text:'Kadınların liderlik rollerinde daha fazla yer alması, toplumsal yapıyı olumlu yönde değiştirir.'},
+  {code:'S66',text:'Sosyal eşitsizlikler, bireylerin toplumsal statü algısını güçlendirir.'},
+  {code:'S48',text:'Otoriteye uymayı öğrenmek önemlidir.'},
+  {code:'S19',text:'Hiyerarşi olmadan yönetim otoritesi zayıflar.'},
+  {code:'S43',text:'Çocuklara, toplumsal düzenin otoriteye dayandığı öğretilmelidir.'},
+  {code:'S64',text:'Sosyal dinamikler, bireylerin statü algılarında değişime neden olur.'},
+  {code:'S2',text:'Gelir ve statü farkları toplumun düzenini sağlar.'},
+  {code:'S50',text:'Otoriteye saygı, toplumsal rollerin anlaşılmasını sağlar.'},
+  {code:'S3',text:'Liderler, alt kademedekilerden daha fazla ayrıcalığa sahip olmalıdır.'},
+  {code:'S18',text:'Hiyerarşik düzen, karar alma süreçlerinde etkinliği artırır.'},
+  {code:'S67',text:'Statü farklılıkları, bireylerin toplumsal rollerine yönelik tutumlarını etkiler.'},
+  {code:'S47',text:'Çocuklara eleştirel düşünme becerisi kazandırılmalıdır.'},
+  {code:'S91',text:'Güç sahibi bireyler, toplumsal düzenin korunmasında daha fazla sorumluluk üstlenmelidir.'},
+  {code:'S21',text:'Etkili bir lider, astlarını dinlemeye zaman ayırır.'},
+  {code:'S90',text:'Toplumsal cinsiyet eşitliği, liderlerin güç algısını dönüştürür.'},
+  {code:'S92',text:'Toplumsal adaletin sağlanması, güçlü bireylerin inisiyatif almasına bağlıdır.'},
+  {code:'S5',text:'Sınıfsal eşitsizlik sosyal düzenin korunmasına katkı sağlar.'},
+  {code:'S1',text:'Toplumda eşitsizlikler doğal ve kaçınılmazdır.'},
+  {code:'S55',text:'Güçlü insanlar, toplumun refahını sağlamakla yükümlüdür.'}
+];
+
+var _demoFields = [
+  {id:'Cinsiyet',label:'Cinsiyet'},
+  {id:'Yas',label:'Yaş Aralığı'},
+  {id:'Medeni',label:'Medeni Durum'},
+  {id:'Egitim',label:'Eğitim Düzeyi'},
+  {id:'Meslek',label:'Meslek'},
+  {id:'Gelir',label:'Gelir Düzeyi'},
+  {id:'Sektor',label:'Sektör'},
+  {id:'Yoneticilik',label:'Yöneticilik Deneyimi'},
+  {id:'Yon_Sure',label:'Yöneticilik Süresi'},
+  {id:'Kurum',label:'Kurum Büyüklüğü'},
+  {id:'Sehir',label:'Şehir'},
+  {id:'Liderlik',label:'Liderlik Pozisyonu'}
+];
+
+var _allResponses = null;
+var _chartInstances = {};
+
+// ══════ API ══════
+function apiGET(action, cb) {
+  var url = GS_URL;
+  if (action) url += (url.indexOf('?') >= 0 ? '&' : '?') + action;
+  url += (url.indexOf('?') >= 0 ? '&' : '?') + '_t=' + Date.now();
+
+  console.log('🔍 API:', url.substring(0, 90) + '...');
+
+  fetch(url, {
+    method: 'GET',
+    redirect: 'follow',
+    credentials: 'omit',
+    headers: { 'Accept': 'application/json' }
+  })
+  .then(function(res) {
+    console.log('🔍 API status:', res.status);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  })
+  .then(function(data) {
+    console.log('🔍 API veri geldi:', data ? 'evet' : 'hayır', data && data.total !== undefined ? ('toplam='+data.total) : '');
+    cb(data);
+  })
+  .catch(function(err) {
+    console.error('🔍 API HATASI:', err.message);
+    cb(null);
+  });
+}
+
+function fetchStats() {
+  apiGET('', function(r) {
+    if (!r) {
+      showDiag('Google Apps Script\'e erişilemiyor. Script\'in "Herkes" erişimine açık şekilde deploy edildiğinden emin olun.');
+      document.getElementById('refreshInfo').textContent = '⚠️ API erişim hatası';
+      document.getElementById('counterTotal').textContent = 'HATA';
+      return;
+    }
+    if (r.error) {
+      showDiag('Sunucu hatası: ' + r.error);
+      document.getElementById('refreshInfo').textContent = '⚠️ Sunucu hatası';
+      return;
+    }
+
+    var total = r.total || 0;
+    var today = r.today || 0;
+    var avgSec = r.avg_duration_sec || 0;
+
+    hideDiag();
+    document.getElementById('counterTotal').textContent = total;
+    document.getElementById('counterToday').textContent = today;
+
+    // Hedef
+    var pct = total > 0 ? Math.min(100, Math.round(total / 381 * 100)) : 0;
+    var f = document.getElementById('targetFill');
+    f.style.width = pct + '%';
+    f.style.background = pct >= 100 ? '#1e8e3e' : pct >= 50 ? '#f59e0b' : '#d93025';
+    document.getElementById('targetMsg').textContent =
+      total >= 1000 ? '🎉 Hedef aşıldı!' :
+      total >= 381 ? '✅ Minimum hedefe ulaşıldı (n=381)!' :
+      total > 0 ? '📈 ' + (381 - total) + ' kişi daha lazım (hedef: 381)' :
+      '⏳ Henüz yanıt yok. Anket linkini paylaşın.';
+
+    // Süre
+    if (avgSec > 0) {
+      var m = Math.floor(avgSec / 60), s = avgSec % 60;
+      document.getElementById('avgDuration').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+    } else {
+      document.getElementById('avgDuration').textContent = '-';
+    }
+
+    // Grafikler
+    if (r.referrers && r.referrers.length) renderBars('referrerChart', r.referrers);
+    if (r.daily && r.daily.length) renderDaily(r.daily);
+
+    var statusText = total === 0
+      ? '⚠️ Henüz yanıt yok — anket linkini paylaşın'
+      : '✅ Son yenileme: ' + new Date().toLocaleTimeString('tr-TR') + ' · Toplam: ' + total + ' yanıt';
+    document.getElementById('refreshInfo').textContent = statusText;
+  });
+}
+
+function loadChartData() {
+  apiGET('full=1', function(r) {
+    console.log('📊 loadChartData:', r ? ('rows:' + (r.rows ? r.rows.length : 'yok') + ' total:' + (r.total || 0)) : 'NULL');
+    if (!r || !r.rows || r.rows.length === 0) {
+      console.log('⚠️ Chart verisi boş. Script doğru deploy edildi mi? Sheet\'te veri var mı?');
+      return;
+    }
+
+    var headers = r.rows.length > 0 ? r.headers : [];
+    console.log('📊 Headers (' + headers.length + '):', headers);
+    console.log('📊 İlk satır örneği:', r.rows[0]);
+
+    _allResponses = r.rows.map(function(row) {
+      var obj = {};
+      for (var i = 0; i < headers.length; i++) {
+        obj[String(headers[i]).trim()] = row[i];
+      }
+      return obj;
+    });
+
+    // Scale dropdown
+    var ss = document.getElementById('scaleSelect');
+    ss.innerHTML = '<option value="">-- Madde seçin --</option>';
+    _scaleItems.forEach(function(item, i) {
+      var opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = 'S' + (i + 1) + ' · ' + item.code + ': ' + item.text.substring(0, 55) + '...';
+      ss.appendChild(opt);
+    });
+
+    // Demo dropdown
+    var ds = document.getElementById('demoSelect');
+    ds.innerHTML = '<option value="">-- Özellik seçin --</option>';
+    _demoFields.forEach(function(f, i) {
+      var opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = f.label;
+      ds.appendChild(opt);
+    });
+
+    console.log('✅ ' + _allResponses.length + ' yanıt yüklendi');
+  });
+}
+
+// ══════ GRAFİKLER ══════
+function renderBars(id, data) {
+  var canvas = document.getElementById(id);
+  if (!canvas) return;
+  if (_chartInstances[id]) _chartInstances[id].destroy();
+
+  if (!data || !data.length) return;
+
+  var ctx = canvas.getContext('2d');
+  var colors = {linkedin:'#0a66c2',twitter:'#1da1f2',facebook:'#1877f2',instagram:'#e4405f',whatsapp:'#25d366',telegram:'#0088cc',direct:'#2563eb'};
+  var labels = data.map(function(d) { return d.key; });
+  var values = data.map(function(d) { return d.count; });
+  var bgColors = data.map(function(d) { return colors[d.key] || '#2563eb'; });
+
+  _chartInstances[id] = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: labels,
+      datasets: [{ data: values, backgroundColor: bgColors, borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 12 }, padding: 15 } } }
+    }
+  });
+
+  var legendEl = document.getElementById('referrerLegend');
+  if (legendEl) {
+    legendEl.innerHTML = data.map(function(d, i) {
+      return '<span style="display:inline-block;margin:4px 8px;font-size:12px"><span style="display:inline-block;width:12px;height:12px;border-radius:2px;background:' + bgColors[i] + ';margin-right:4px;vertical-align:middle"></span>' + d.key + ': <strong>' + d.count + '</strong></span>';
+    }).join('');
+  }
+}
+
+function renderDaily(data) {
+  var canvas = document.getElementById('dailyChart');
+  if (!canvas) return;
+  if (_chartInstances['dailyChart']) _chartInstances['dailyChart'].destroy();
+
+  if (!data || !data.length) return;
+
+  var ctx = canvas.getContext('2d');
+  var labels = data.map(function(d) {
+    return new Date(d.key).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+  });
+  var values = data.map(function(d) { return d.count; });
+
+  _chartInstances['dailyChart'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{ label: 'Yanıt', data: values, backgroundColor: '#2563eb', borderRadius: 6, borderWidth: 1, borderColor: '#1d4ed8' }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } } },
+        x: { ticks: { font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+function renderScaleChart() {
+  var idx = parseInt(document.getElementById('scaleSelect').value);
+  if (isNaN(idx) || !_allResponses) return;
+  var item = _scaleItems[idx];
+  var codeKey = item.code + '_HAM';
+  var counts = {1:0, 2:0, 3:0, 4:0, 5:0};
+  _allResponses.forEach(function(r) {
+    var v = parseInt(r[codeKey]);
+    if (v >= 1 && v <= 5) counts[v]++;
+  });
+
+  var canvas = document.getElementById('scaleChart');
+  if (_chartInstances['scaleChart']) _chartInstances['scaleChart'].destroy();
+  var ctx = canvas.getContext('2d');
+  var colors = ['#E3F2FD','#90CAF9','#42A5F5','#1E88E5','#0D47A1'];
+  _chartInstances['scaleChart'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['1-Kesinlikle Katılmıyorum','2-Katılmıyorum','3-Kararsızım','4-Katılıyorum','5-Kesinlikle Katılıyorum'],
+      datasets: [{
+        label: item.code + ': ' + item.text.substring(0, 50),
+        data: [counts[1],counts[2],counts[3],counts[4],counts[5]],
+        backgroundColor: colors,
+        borderWidth: 1, borderColor: '#fff', borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: true, position: 'bottom', labels: { font: { size: 10 } } } },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1, font: { size: 11 } }, title: { display: true, text: 'Kişi Sayısı', font: { size: 11 } } },
+        x: { ticks: { font: { size: 9 }, maxRotation: 45, minRotation: 0 } }
+      }
+    }
+  });
+}
+
+function renderDemoChart() {
+  var idx = parseInt(document.getElementById('demoSelect').value);
+  if (isNaN(idx) || !_allResponses) return;
+  var field = _demoFields[idx];
+  var counts = {};
+  _allResponses.forEach(function(r) {
+    var v = r[field.id] || '(Boş)';
+    counts[v] = (counts[v] || 0) + 1;
+  });
+  var entries = [];
+  for (var k in counts) entries.push({ key: k, count: counts[k] });
+  entries.sort(function(a, b) { return b.count - a.count; });
+  var labels = entries.map(function(e) { return e.key; });
+  var values = entries.map(function(e) { return e.count; });
+
+  var canvas = document.getElementById('demoChart');
+  if (_chartInstances['demoChart']) _chartInstances['demoChart'].destroy();
+  var ctx = canvas.getContext('2d');
+  var palette = ['#2563eb','#2d5fa8','#4285f4','#669df6','#a8c7fa','#d2e3fc','#e8f0fe','#f59e0b','#fbbc04','#34a853','#ea4335','#9334e6'];
+  var bgColors = entries.map(function(_, i) { return palette[i % palette.length]; });
+
+  _chartInstances['demoChart'] = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: labels,
+      datasets: [{ data: values, backgroundColor: bgColors, borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, padding: 8 } } }
+    }
+  });
+
+  var legend = document.getElementById('demoLegend');
+  if (legend) {
+    legend.innerHTML = entries.map(function(e, i) {
+      return '<span style="display:inline-block;margin:3px 6px;font-size:11px"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:' + bgColors[i] + ';margin-right:3px;vertical-align:middle"></span>' + e.key + ': <strong>' + e.count + '</strong></span>';
+    }).join('');
+  }
+}
+
+// ══════ CSV İNDİR ══════
+function downloadCSV() {
+  if (!_allResponses || !_allResponses.length) {
+    alert('⚠️ Henüz yanıt yok. Lütfen önce verilerin yüklenmesini bekleyin.');
+    return;
+  }
+  // Mevcut headers'dan CSV oluştur
+  var first = _allResponses[0];
+  var headers = Object.keys(first);
+  var rows = [headers.join(',')];
+  _allResponses.forEach(function(r) {
+    var row = headers.map(function(h) {
+      var val = String(r[h] || '');
+      // Virgül veya tırnak içeriyorsa escape'le
+      if (val.includes(',') || val.includes('"') || val.includes('\n')) {
+        return '"' + val.replace(/"/g, '""') + '"';
+      }
+      return val;
+    });
+    rows.push(row.join(','));
+  });
+  var csv = '﻿' + rows.join('\n'); // BOM for Excel UTF-8
+  var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'Guc_Mesafesi_Anket_' + new Date().toISOString().slice(0, 10) + '.csv';
+  a.click();
+  toast('✅ CSV indirildi! (' + _allResponses.length + ' yanıt)');
+}
+
+// ══════ YARDIMCILAR ══════
+function openSheet() {
+  if (!SHEET_URL || SHEET_URL.indexOf('SIZIN_GOOGLE') >= 0) {
+    alert('⚠️ Lütfen admin.html dosyasında SHEET_URL değişkenine Google Sheet linkinizi yazın.');
+    return;
+  }
+  window.open(SHEET_URL, '_blank');
+}
+
+function downloadChart(chartId, filename) {
+  var canvas = document.getElementById(chartId);
+  if (!canvas) { toast('Grafik bulunamadı'); return; }
+  var link = document.createElement('a');
+  link.download = filename + '_' + new Date().toISOString().slice(0, 10) + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  toast('✅ Grafik indirildi!');
+}
+
+function setupShareLinks() {
+  var base = location.origin + location.pathname.replace('/admin.html', '').replace('/admin', '');
+  var platforms = [
+    { id: 'linkedin', n: 'LinkedIn' },
+    { id: 'twitter', n: 'Twitter/X' },
+    { id: 'facebook', n: 'Facebook' },
+    { id: 'whatsapp', n: 'WhatsApp' },
+    { id: 'telegram', n: 'Telegram' },
+    { id: 'direct', n: 'Doğrudan Link' }
+  ];
+  document.getElementById('shareLinks').innerHTML = platforms.map(function(x) {
+    var u = base + '?ref=' + x.id;
+    return '<div class="share-link-item"><span class="platform">' + x.n + '</span><span class="url">' + u + '</span><button class="copy-btn" onclick="copyUrl(\'' + u + '\',this)">Kopyala</button></div>';
+  }).join('');
+}
+
+function copyUrl(url, btn) {
+  navigator.clipboard.writeText(url).then(function() {
+    var orig = btn.textContent;
+    btn.textContent = '✓';
+    btn.style.background = '#1e8e3e';
+    setTimeout(function() { btn.textContent = orig; btn.style.background = '#2563eb'; }, 1500);
+    toast('📋 Link kopyalandı!');
+  });
+}
+
+function showDiag(msg) {
+  document.getElementById('diagBox').style.display = 'block';
+  document.getElementById('diagMsg').textContent = msg;
+}
+function hideDiag() {
+  document.getElementById('diagBox').style.display = 'none';
+}
+
+function toast(m) {
+  var t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = m;
+  document.body.appendChild(t);
+  setTimeout(function() { t.remove(); }, 2500);
+}
+
+// ══════ BAŞLAT ══════
+setupShareLinks();
+fetchStats();
+loadChartData();
+setInterval(fetchStats, 60000);    // Her 1 dk'da bir sayaçları güncelle
+setInterval(loadChartData, 300000); // Her 5 dk'da bir chart verilerini güncelle
+</script>
+</body>
+</html>
