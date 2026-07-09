@@ -50,16 +50,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .manual-toggle{font-size:12px;color:var(--primary);cursor:pointer;margin-top:6px;display:inline-block;text-decoration:underline}
 .manual-input{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;margin-top:8px;background:var(--card);color:var(--text);display:none}
 .manual-input.show{display:block}
+.wheel-wrap.filled{box-shadow:0 0 0 1px rgba(30,142,62,.15)}
 .likert-group{margin-bottom:20px}
 .likert-label{font-size:16px;font-weight:600;margin-bottom:10px;line-height:1.4}
 .likert-label .code{background:var(--accent);color:var(--primary);padding:1px 6px;border-radius:4px;font-size:10px;margin-left:4px}
 .likert-label .tm{color:var(--error);font-size:10px;margin-left:4px}
-.likert-scroll{overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:4px 0 8px}
-.likert-scroll::-webkit-scrollbar{display:none}
-.likert-row{display:flex;gap:8px;padding:0 calc(50% - 60px)}
-.likert-opt{width:130px;min-width:130px;height:130px;scroll-snap-align:center;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:12px;font-weight:600;cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);flex-shrink:0;padding:10px 6px;gap:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);color:#fff}
-.likert-opt .likert-num{font-size:26px;font-weight:800}
-.likert-opt .likert-txt{font-size:13px;line-height:1.3;opacity:.9}
+.likert-scroll{overflow:visible;padding:4px 0 8px}
+.likert-row{display:flex;gap:6px;padding:0}
+.likert-opt{flex:1 1 0;min-width:0;height:88px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:10px;font-weight:600;cursor:pointer;transition:all .2s cubic-bezier(.4,0,.2,1);padding:6px 3px;gap:3px;box-shadow:0 2px 8px rgba(0,0,0,0.1);color:#fff}
+.likert-opt .likert-num{font-size:19px;font-weight:800}
+.likert-opt .likert-txt{font-size:9.5px;line-height:1.2;opacity:.9}
 .likert-opt.picked{transform:scale(1.06);box-shadow:0 10px 28px rgba(0,0,0,0.22);z-index:2;border:3px solid rgba(255,255,255,0.5)}
 .likert-opt:not(.picked){opacity:.55}
 .likert-opt.l1{background:var(--likert-1);color:#334155}
@@ -67,8 +67,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .likert-opt.l3{background:var(--likert-3);color:#fff}
 .likert-opt.l4{background:var(--likert-4);color:#fff}
 .likert-opt.l5{background:var(--likert-5);color:#fff}
-.confirm-btn{display:block;width:100%;padding:10px;border:2px solid var(--primary);border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;text-align:center;font-family:inherit;background:var(--card);color:var(--primary);margin-top:6px;transition:all .2s}
-.confirm-btn:hover{background:var(--accent)}
 .btn{display:block;width:100%;padding:18px;border:none;border-radius:14px;font-size:19px;font-weight:700;cursor:pointer;transition:all .2s;text-align:center;font-family:inherit}
 .btn-primary{background:var(--primary);color:#fff}
 .btn-primary:hover{background:var(--primary-light);transform:translateY(-1px)}
@@ -91,7 +89,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:24px;font-size:13px;font-weight:600;z-index:200;animation:toastIn .3s ease}
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 #confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:300}
-@media(max-width:400px){.app{padding:12px 10px var(--safe-bottom)}.card{padding:14px}.wheel-wrap{height:160px}.wheel-scroll{padding:58px 8px}.wheel-wrap::before,.wheel-wrap::after{height:58px}.wheel-opt{height:44px;font-size:14px}.likert-opt{width:100px;min-width:100px;height:100px;font-size:10px}.likert-opt .likert-num{font-size:18px}.likert-opt .likert-txt{font-size:10px}.likert-row{padding:0 calc(50% - 50px)}.welcome-features{grid-template-columns:1fr}}
+@media(max-width:400px){.app{padding:12px 10px var(--safe-bottom)}.card{padding:14px}.wheel-wrap{height:160px}.wheel-scroll{padding:58px 8px}.wheel-wrap::before,.wheel-wrap::after{height:58px}.wheel-opt{height:44px;font-size:14px}.likert-opt{height:76px;font-size:9px;padding:4px 2px}.likert-opt .likert-num{font-size:15px}.likert-opt .likert-txt{font-size:8.5px}.welcome-features{grid-template-columns:1fr}}
 /* Etik Onay Popup */
 .popup-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:999;display:flex;align-items:center;justify-content:center;padding:16px}
 .popup-overlay.hidden{display:none}
@@ -259,7 +257,6 @@ function renderDemoStep(start,end,num,title){
       h+='<span class="manual-toggle" onclick="toggleManual(\''+gid+'\',this)">✏️ Kendi yanıtımı yazayım</span>'+
       '<input class="manual-input" id="manual-'+gid+'" placeholder="Yanıtınızı yazın..." oninput="onManualInput(\''+gid+'\',this.value)">';
     }
-    h+='<button class="confirm-btn" id="confirm-'+gid+'" onclick="confirmPick(\''+gid+'\')">✓ Onayla</button>';
     h+='</div>';
   }
   h+='</div></div>';return h;
@@ -305,20 +302,6 @@ function selectLikert(qid,val,el){
   validateStep();updateProgress();
 }
 
-function confirmPick(gid){
-  var v = picks[gid];
-  if(v === undefined || v < 0) return;
-  confirmed[gid] = true;
-  var btn = document.getElementById('confirm-'+gid);
-  if(btn){btn.textContent='✓ Onaylandı';btn.style.background='#1e8e3e';btn.style.color='#fff';btn.style.borderColor='#1e8e3e';}
-  var s = document.getElementById('set-'+gid);
-  if(s){s.style.display='inline';s.textContent='✓';s.style.fontSize='18px';s.style.fontWeight='800';s.style.color='#1e8e3e';}
-  setTimeout(function(){
-    if(btn){btn.textContent='✓ Onayla (değiştir)';btn.style.background='var(--card)';btn.style.color='var(--primary)';btn.style.borderColor='var(--primary)';}
-  },1500);
-  validateStep();updateProgress();
-}
-
 function toggleManual(gid,el){
   var inp=document.getElementById('manual-'+gid);if(!inp)return;
   inp.classList.toggle('show');
@@ -353,7 +336,9 @@ function initSteps(){
       function update(){
         var idx=Math.max(0,Math.min(getIdx(),opts.length-1));
         scroll.querySelectorAll('.wheel-opt').forEach(function(e,i){e.classList.toggle('picked',i===idx)});
-        wrap.classList.add('filled');picks[gid]=idx;
+        wrap.classList.add('filled');picks[gid]=idx;confirmed[gid]=true;
+        var s=document.getElementById('set-'+gid);
+        if(s){s.style.display='inline';s.textContent='✓';s.style.fontSize='18px';s.style.fontWeight='800';s.style.color='#1e8e3e';}
         validateStep();updateProgress();
       }
       var t;scroll.addEventListener('scroll',function(){clearTimeout(t);t=setTimeout(update,150)},{passive:true});
