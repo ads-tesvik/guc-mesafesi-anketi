@@ -33,24 +33,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .card{background:var(--card);border-radius:var(--radius);padding:20px;margin-bottom:12px;box-shadow:var(--shadow)}
 .card h2{font-size:19px;color:var(--primary);margin-bottom:6px}
 .card .desc{font-size:15px;color:var(--sub);margin-bottom:16px;line-height:1.6}
-.wheel-group{margin-bottom:20px}
-.wheel-label{font-size:16px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.wheel-label .req{color:var(--error)}
-.wheel-label .set{color:var(--success);font-size:12px;font-weight:400;margin-left:auto}
-.wheel-wrap{position:relative;height:180px;overflow:hidden;background:var(--bg);border-radius:14px;border:1.5px solid var(--border);transition:border-color .2s}
-.wheel-wrap.filled{border-color:var(--primary)}
-.wheel-wrap::before,.wheel-wrap::after{content:'';position:absolute;left:0;right:0;z-index:2;pointer-events:none}
-.wheel-wrap::before{top:0;height:68px;background:linear-gradient(to bottom,var(--bg),transparent)}
-.wheel-wrap::after{bottom:0;height:68px;background:linear-gradient(to top,var(--bg),transparent)}
-.wheel-highlight{position:absolute;left:8px;right:8px;top:50%;transform:translateY(-50%);height:44px;border-top:2px solid var(--primary);border-bottom:2px solid var(--primary);background:rgba(26,60,110,0.04);border-radius:10px;z-index:1;pointer-events:none}
-.wheel-scroll{height:100%;overflow-y:auto;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;padding:68px 12px;scrollbar-width:none}
-.wheel-scroll::-webkit-scrollbar{display:none}
-.wheel-opt{height:44px;display:flex;align-items:center;justify-content:center;scroll-snap-align:center;font-size:15px;color:var(--sub);cursor:pointer;transition:all .15s;border-radius:8px;user-select:none}
-.wheel-opt.picked{color:var(--primary);font-weight:700;font-size:16px}
+.opt-list-group{margin-bottom:20px}
+.opt-list-label{font-size:16px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.opt-list-label .req{color:var(--error)}
+.opt-list-label .set{color:var(--success);font-size:12px;font-weight:400;margin-left:auto}
+.opt-search{width:100%;padding:11px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;margin-bottom:8px;font-family:inherit;box-sizing:border-box;background:var(--bg);color:var(--text)}
+.opt-list{display:flex;flex-direction:column;gap:6px}
+.opt-list.scrollable{max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-right:2px}
+.opt-item{padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);font-size:15px;color:var(--text);cursor:pointer;transition:all .15s;user-select:none}
+.opt-item.picked{border-color:var(--primary);background:var(--accent);color:var(--primary);font-weight:700}
+.opt-item.hidden{display:none}
+.opt-empty{padding:10px;text-align:center;color:var(--muted);font-size:13px}
 .manual-toggle{font-size:12px;color:var(--primary);cursor:pointer;margin-top:6px;display:inline-block;text-decoration:underline}
 .manual-input{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;margin-top:8px;background:var(--card);color:var(--text);display:none}
 .manual-input.show{display:block}
-.wheel-wrap.filled{box-shadow:0 0 0 1px rgba(30,142,62,.15)}
 .likert-group{margin-bottom:20px}
 .likert-label{font-size:16px;font-weight:600;margin-bottom:10px;line-height:1.4}
 .likert-label .code{background:var(--accent);color:var(--primary);padding:1px 6px;border-radius:4px;font-size:10px;margin-left:4px}
@@ -89,7 +85,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:24px;font-size:13px;font-weight:600;z-index:200;animation:toastIn .3s ease}
 @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 #confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:300}
-@media(max-width:400px){.app{padding:12px 10px var(--safe-bottom)}.card{padding:14px}.wheel-wrap{height:160px}.wheel-scroll{padding:58px 8px}.wheel-wrap::before,.wheel-wrap::after{height:58px}.wheel-opt{height:44px;font-size:14px}.likert-opt{height:76px;font-size:9px;padding:4px 2px}.likert-opt .likert-num{font-size:15px}.likert-opt .likert-txt{font-size:8.5px}.welcome-features{grid-template-columns:1fr}}
+@media(max-width:400px){.app{padding:12px 10px var(--safe-bottom)}.card{padding:14px}.opt-item{padding:10px 12px;font-size:14px}.likert-opt{height:76px;font-size:9px;padding:4px 2px}.likert-opt .likert-num{font-size:15px}.likert-opt .likert-txt{font-size:8.5px}.welcome-features{grid-template-columns:1fr}}
 /* Etik Onay Popup */
 .popup-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:999;display:flex;align-items:center;justify-content:center;padding:16px}
 .popup-overlay.hidden{display:none}
@@ -246,13 +242,15 @@ function renderWelcome(){
 
 function renderDemoStep(start,end,num,title){
   var actualStart = start, actualEnd = Math.min(end, DEMOGRAPHICS.length);
-  var h='<div class="step" id="step-'+num+'"><div class="card"><h2>📋 '+title+'</h2><p class="desc">Makarayı kaydırarak seçiminizi yapın.</p>';
+  var h='<div class="step" id="step-'+num+'"><div class="card"><h2>📋 '+title+'</h2><p class="desc">Seçeneğe dokunarak yanıtınızı işaretleyin.</p>';
   for(var i=actualStart;i<actualEnd;i++){
-    var d=DEMOGRAPHICS[i],gid='d_'+i;
-    h+='<div class="wheel-group"><div class="wheel-label">'+d.icon+' '+d.q+' <span class="req">*</span><span class="set" id="set-'+gid+'" style="display:none">✓</span></div>'+
-    '<div class="wheel-wrap" id="wheel-'+gid+'"><div class="wheel-highlight"></div><div class="wheel-scroll">';
-    for(var j=0;j<d.opts.length;j++) h+='<div class="wheel-opt">'+d.opts[j]+'</div>';
-    h+='</div></div>';
+    var d=DEMOGRAPHICS[i],gid='d_'+i,isLong=d.opts.length>12;
+    h+='<div class="opt-list-group"><div class="opt-list-label">'+d.icon+' '+d.q+' <span class="req">*</span><span class="set" id="set-'+gid+'" style="display:none">✓</span></div>';
+    if(isLong) h+='<input class="opt-search" id="search-'+gid+'" placeholder="Yazarak arayın..." oninput="filterOpts(\''+gid+'\',this.value)">';
+    h+='<div class="opt-list'+(isLong?' scrollable':'')+'" id="list-'+gid+'">';
+    for(var j=0;j<d.opts.length;j++) h+='<div class="opt-item" data-txt="'+W(d.opts[j].toLocaleLowerCase('tr'))+'" onclick="selectDemo(\''+gid+'\','+j+',this)">'+d.opts[j]+'</div>';
+    if(isLong) h+='<div class="opt-empty" id="empty-'+gid+'" style="display:none">Eşleşen seçenek bulunamadı</div>';
+    h+='</div>';
     if(d.hasManual||d.id==='meslek'||d.id==='sektor'){
       h+='<span class="manual-toggle" onclick="toggleManual(\''+gid+'\',this)">✏️ Kendi yanıtımı yazayım</span>'+
       '<input class="manual-input" id="manual-'+gid+'" placeholder="Yanıtınızı yazın..." oninput="onManualInput(\''+gid+'\',this.value)">';
@@ -302,10 +300,29 @@ function selectLikert(qid,val,el){
   validateStep();updateProgress();
 }
 
+function selectDemo(gid,idx,el){
+  var list=el.closest('.opt-list');
+  list.querySelectorAll('.opt-item').forEach(function(o){o.classList.remove('picked');});
+  el.classList.add('picked');picks[gid]=idx;confirmed[gid]=true;
+  var s=document.getElementById('set-'+gid);
+  if(s){s.style.display='inline';s.textContent='✓';s.style.fontSize='18px';s.style.fontWeight='800';s.style.color='#1e8e3e';}
+  validateStep();updateProgress();
+}
+function filterOpts(gid,q){
+  q=q.trim().toLocaleLowerCase('tr');
+  var list=document.getElementById('list-'+gid),empty=document.getElementById('empty-'+gid),shown=0;
+  list.querySelectorAll('.opt-item').forEach(function(el){
+    var match=!q||el.getAttribute('data-txt').indexOf(q)>=0;
+    el.classList.toggle('hidden',!match);
+    if(match)shown++;
+  });
+  if(empty)empty.style.display=shown?'none':'block';
+}
+
 function toggleManual(gid,el){
   var inp=document.getElementById('manual-'+gid);if(!inp)return;
   inp.classList.toggle('show');
-  el.textContent=inp.classList.contains('show')?'✓ Makaradan seç':'✏️ Kendi yanıtımı yazayım';
+  el.textContent=inp.classList.contains('show')?'✓ Listeden seç':'✏️ Kendi yanıtımı yazayım';
   if(!inp.classList.contains('show')){inp.value='';delete manualInputs[gid];validateStep();updateProgress();}
 }
 function onManualInput(gid,v){
@@ -325,30 +342,6 @@ function initSteps(){
     renderDemoStep(6,12,4,'Demografik Bilgiler (2/2)') +
     renderComplete();
 
-  // Wheel scroll event'leri bağla
-  [1,4].forEach(function(n){
-    var step=document.getElementById('step-'+n);if(!step)return;
-    step.querySelectorAll('.wheel-scroll').forEach(function(scroll){
-      var wrap=scroll.parentElement,gid=wrap.id.replace('wheel-','');
-      var di=parseInt(gid.split('_')[1]||'');if(isNaN(di)||!DEMOGRAPHICS[di])return;
-      var opts=DEMOGRAPHICS[di].opts;
-      function getIdx(){return Math.round(scroll.scrollTop/44)}
-      function update(){
-        var idx=Math.max(0,Math.min(getIdx(),opts.length-1));
-        scroll.querySelectorAll('.wheel-opt').forEach(function(e,i){e.classList.toggle('picked',i===idx)});
-        wrap.classList.add('filled');picks[gid]=idx;confirmed[gid]=true;
-        var s=document.getElementById('set-'+gid);
-        if(s){s.style.display='inline';s.textContent='✓';s.style.fontSize='18px';s.style.fontWeight='800';s.style.color='#1e8e3e';}
-        validateStep();updateProgress();
-      }
-      var t;scroll.addEventListener('scroll',function(){clearTimeout(t);t=setTimeout(update,150)},{passive:true});
-      setTimeout(update,200);
-      scroll.addEventListener('click',function(e){
-        var opt=e.target.closest('.wheel-opt');if(!opt)return;
-        scroll.scrollTo({top:Array.from(scroll.querySelectorAll('.wheel-opt')).indexOf(opt)*44,behavior:'smooth'});
-      });
-    });
-  });
   showStep(0);
 }
 
